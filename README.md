@@ -16,7 +16,7 @@ Arch Automatic Installation Commands
 - Secure Boot disabled from UEFI.
 - GPT disk.
 - Existing EFI partition (only tested with the one created by Windows 10 in a Lenovo Thinkpad)
-- Free un-partitioned disk space ready to be asigned according instructions. See comments inside `run_archaic`.
+- Free un-partitioned disk space ready to be asigned according to instructions. See comments inside `run_archaic`.
 - Live Arch Installation ISO (only tested with a USB stick on March 2018).
 - Internet conection.
 
@@ -31,7 +31,7 @@ Arch Automatic Installation Commands
 - Run `run_archaic` script and wait for input prompts.
 - Do not relax too much.
 
-If you need to modify the code, remember: `shellcheck` is your friend.
+If you need to modify the code, remember: [shellcheck](https://github.com/koalaman/shellcheck) is your friend.
 
 ## Inspiration
 
@@ -44,3 +44,4 @@ If you need to modify the code, remember: `shellcheck` is your friend.
 - Ease testing with virtualization.
 - Suspend to RAM vs. crypt. What to do?
 - Many steps should be optional: backups, secondary_arch, etc.
+- Many hardcoded options: keyboard layout, timedate locale, etc.

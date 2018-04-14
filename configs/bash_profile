@@ -1,0 +1,5 @@
+# When bash is called as a login shell,
+# ~/.bash_profile is executed instead of ~/.bashrc.
+
+# With this, ~/.bashrc will be also executed for login shells:
+[[ -f ~/.bashrc ]] && . ~/.bashrc

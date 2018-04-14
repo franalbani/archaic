@@ -1,0 +1,28 @@
+
+# WC_ are wildcards that must be replaced:
+#   BOOT_UUID
+#   LUKS_LVM_UUID
+#   VG_NAME
+#   SEC_ARCH_UUID
+
+menuentry "Arch Linux" {
+    icon     /EFI/refind/icons/os_arch.png
+    volume   WC_BOOT_UUID
+    loader   /vmlinuz-linux
+    initrd   /initramfs-linux.img
+    options  "rd.luks.uuid=WC_LUKS_LVM_UUID rd.luks.name=WC_LUKS_LVM_UUID=cryptlvm root=/dev/mapper/WC_VG_NAME-root fbcon=scrollback:1024k rw add_efi_memmap"
+    submenuentry "Boot using fallback initramfs" {
+        initrd /initramfs-linux-fallback.img
+    }
+}
+
+menuentry "VaultOS" {
+    icon     /EFI/refind/icons/boot_linux.png
+    volume   WC_BOOT_UUID
+    loader   /vmlinuz-linux-lts
+    initrd   /initramfs-linux-lts.img
+    options  "root=UUID=WC_SEC_ARCH_UUID fbcon=scrollback:1024k rw add_efi_memmap"
+    submenuentry "Boot using fallback initramfs" {
+        initrd /initramfs-linux-lts-fallback.img
+    }
+}

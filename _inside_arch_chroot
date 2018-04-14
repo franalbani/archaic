@@ -1,0 +1,242 @@
+#!/bin/bash
+
+# IMPORTANT: this script in not meant to be run
+#            by the user.
+#            It is meant to be run by `run_archaic`.
+
+set -x
+
+HOSTNAME=$1
+KERNEL=$2
+debug=$3
+
+# Make CTRL+C interrupt whole script:
+trap "exit 1" INT
+# Stop script if any command fails:
+set -e
+
+LOCALE_GEN=/etc/locale.gen
+LOCALE_CONF=/etc/locale.conf
+ETC_HOSTS=/etc/hosts
+ETC_MKINITCPIO=/etc/mkinitcpio.conf
+ETCKEEPER_CONF=/etc/etckeeper/etckeeper.conf
+VCONSOLE_CONF=/etc/vconsole.conf
+ETC_GITIGNORE=/etc/.gitignore
+ETC_LOCALTIME=/etc/localtime
+PACMAN_CONF=/etc/pacman.conf
+
+if ! [[ "$KERNEL" =~ ^(linux|linux-lts)$ ]]
+then
+    echo "Wrong kernel: $KERNEL"
+    exit 1
+fi
+
+
+### ETCKEEPER Initialization ###
+export GIT_COMMITTER_NAME=archaic
+export GIT_COMMITTER_EMAIL=archaic@$HOSTNAME
+GIT_AUTHOR="$GIT_COMMITTER_NAME <$GIT_COMMITTER_EMAIL>"
+
+$debug etckeeper init
+$debug cd /etc
+$debug git rm --cached --ignore-unmatch /etc/.updated
+$debug git rm --cached --ignore-unmatch /etc/resolv.conf
+$debug sed -i '$ a\.updated' $ETC_GITIGNORE
+$debug sed -i '$ a\resolv.conf' $ETC_GITIGNORE
+$debug git add /etc/.gitignore
+$debug git commit --author="$GIT_AUTHOR" -m 'Initial commit'
+
+# Prevents etckeeper from auto commiting:
+$debug sed -i '$ a\AVOID_COMMIT_BEFORE_INSTALL=1' $ETCKEEPER_CONF
+$debug sed -i '$ a\AVOID_DAILY_AUTOCOMMITS=1'     $ETCKEEPER_CONF
+$debug git add $ETCKEEPER_CONF
+$debug git commit --author="$GIT_AUTHOR" -m 'Prevents etckeeper from auto commiting'
+
+$debug ln -sf /usr/share/zoneinfo/America/Buenos_Aires "$ETC_LOCALTIME"
+$debug hwclock --systohc
+$debug mkdir -p /etc/systemd/system/sysinit.target.wants/
+$debug ln -sf /usr/lib/systemd/system/systemd-timesyncd.service /etc/systemd/system/sysinit.target.wants/systemd-timesyncd.service
+$debug cd /etc
+# /etc/adjtime is in etckeeper .gitignore
+$debug git add /etc/systemd/system/sysinit.target.wants/systemd-timesyncd.service "$ETC_LOCALTIME"
+$debug git commit --author="$GIT_AUTHOR" -m 'sets timezone and ntp=True'
+
+
+### LOCALE and KEYMAP
+$debug sed -i '$ a\en_US.UTF-8 UTF-8' $LOCALE_GEN
+$debug sed -i '$ a\es_AR.UTF-8 UTF-8' $LOCALE_GEN
+$debug bash -c "echo LANG=en_US.UTF-8 > $LOCALE_CONF "
+$debug locale-gen
+
+$debug bash -c "echo KEYMAP=la-latin1     >> $VCONSOLE_CONF "
+$debug bash -c "echo FONT=Lat2-Terminus16 >> $VCONSOLE_CONF "
+
+$debug cd /etc
+$debug git add "$LOCALE_GEN" "$LOCALE_CONF" "$VCONSOLE_CONF"
+$debug git commit --author="$GIT_AUTHOR" -m 'sets locale, keymap and vconsole font'
+
+
+### HOSTNAME ###
+$debug bash -c "echo $HOSTNAME > /etc/hostname"
+
+$debug sed -i '$ a\127.0.0.1 localhost '"$HOSTNAME" $ETC_HOSTS
+$debug sed -i '$ a\::1       localhost '"$HOSTNAME" $ETC_HOSTS
+
+$debug cd /etc
+$debug git add /etc/hostname "$ETC_HOSTS"
+$debug git commit --author="$GIT_AUTHOR" -m 'sets hostname'
+
+
+### RENAMING Network interfaces ###
+WIRELESS_MAC=$(iw dev | grep addr | tail -n 1 | awk '{print $2}')
+LO_MAC=00:00:00:00:00:00
+WIRED_MAC=$(ip -br link show | grep -v -E "${LO_MAC}|${WIRELESS_MAC}" | awk '{print $3}' | head -n 1)
+
+UDEV_NW_RULE=/etc/udev/rules.d/11-network.rules
+$debug cp /root/configs/11-network.rules $UDEV_NW_RULE
+
+$debug sed "/.*CABLE_WILDCARD.*/ s/CABLE_WILDCARD/$WIRED_MAC/"  -i "$UDEV_NW_RULE"
+$debug sed "/.*WIFI_WILDCARD.*/ s/WIFI_WILDCARD/$WIRELESS_MAC/" -i "$UDEV_NW_RULE"
+
+$debug cd /etc
+$debug git add "$UDEV_NW_RULE"
+$debug git commit --author="$GIT_AUTHOR" -m 'adds udev rule for changing network interfaces names'
+
+
+### DHCP Client Daemon ###
+# This will save ~5 seconds:
+$debug sed -i '$ a\noarp' /etc/dhcpcd.conf
+# This triggers dhcpcd with cable conexion:
+$debug ln -sf /usr/lib/systemd/system/dhcpcd@.service /etc/systemd/system/multi-user.target.wants/dhcpcd@cable.service
+# This sends dhcpcd to the background to avoid slowing boot:
+$debug mkdir -p /etc/systemd/system/dhcpcd@.service.d/
+$debug cp /root/configs/dhcpcd-no-wait.conf /etc/systemd/system/dhcpcd@.service.d/
+$debug cd /etc
+$debug git add /etc/dhcpcd.conf /etc/systemd/system/multi-user.target.wants/dhcpcd@cable.service /etc/systemd/system/dhcpcd@.service.d/dhcpcd-no-wait.conf
+$debug git commit --author="$GIT_AUTHOR" -m 'adds dhcpcd@cable systemd unit'
+
+
+### Enable SSH Server ###
+$debug ln -sf /usr/lib/systemd/system/sshd.service /etc/systemd/system/multi-user.target.wants/sshd.service
+$debug cd /etc
+$debug git add /etc/systemd/system/multi-user.target.wants/sshd.service
+$debug git commit --author="$GIT_AUTHOR" -m 'adds sshd systemd enabled unit'
+
+
+### mkinitcpio ###
+HOOKS="base systemd autodetect modconf block keyboard sd-vconsole sd-encrypt sd-lvm2 filesystems keyboard fsck"
+$debug sed "/^HOOKS=/ s/.*/HOOKS=($HOOKS)/" -i "$ETC_MKINITCPIO"
+$debug cd /etc
+$debug git add "$ETC_MKINITCPIO"
+$debug git commit --author="$GIT_AUTHOR" -m 'modifies mkinitcpio.conf HOOKS to suit systemd, LVM+LUKS and vconsole'
+$debug mkinitcpio -p "$KERNEL"
+
+
+### AVAHI ###
+NSS_HOSTS='files mymachines myhostname mdns4_minimal [NOTFOUND=return] resolve [!UNAVAIL=return] dns'
+$debug mkdir -p /etc/systemd/system/sockets.target.wants
+$debug ln -sf /usr/lib/systemd/system/avahi-daemon.socket /etc/systemd/system/sockets.target.wants/avahi-daemon.socket
+$debug ln -sf /usr/lib/systemd/system/avahi-daemon.service /etc/systemd/system/multi-user.target.wants/avahi-daemon.service
+$debug ln -sf /usr/lib/systemd/system/avahi-daemon.service /etc/systemd/system/dbus-org.freedesktop.Avahi.service
+$debug sed "/^hosts:/ s/.*/hosts: $NSS_HOSTS/" -i /etc/nsswitch.conf
+$debug cd /etc
+$debug git add /etc/nsswitch.conf /etc/systemd/system/sockets.target.wants/avahi-daemon.socket /etc/systemd/system/multi-user.target.wants/avahi-daemon.service /etc/systemd/system/dbus-org.freedesktop.Avahi.service
+$debug git commit --author="$GIT_AUTHOR" -m 'configs and enables avahi'
+
+
+### PACMAN OPTIONS ###
+$debug sed 's/^#\(UseDelta.*\)/\1/'        -i "$PACMAN_CONF"
+$debug sed 's/^#\(UseSyslog.*\)/\1/'       -i "$PACMAN_CONF"
+$debug sed 's/^#\(Color.*\)/\1/'           -i "$PACMAN_CONF"
+$debug sed 's/^#\(TotalDownload.*\)/\1/'   -i "$PACMAN_CONF"
+$debug sed 's/^#\(VerbosePkgLists.*\)/\1/' -i "$PACMAN_CONF"
+$debug cd /etc
+$debug git add "$PACMAN_CONF"
+$debug git commit --author="$GIT_AUTHOR" -m 'enhances pacman.conf'
+
+
+### LID SWITCH BEHAVIOUR ###
+$debug sed -i '$ a\HandleLidSwitch=ignore' /etc/systemd/logind.conf
+$debug cd /etc
+$debug git add /etc/systemd/logind.conf
+$debug git commit --author="$GIT_AUTHOR" -m 'sets systemd to ignore LidSwitch'
+
+
+### BLUETOOTH ###
+$debug sed 's/^#AutoEnable=false$/AutoEnable=true/' -i /etc/bluetooth/main.conf
+$debug ln -sf /usr/lib/systemd/system/bluetooth.service /etc/systemd/system/dbus-org.bluez.service
+$debug mkdir -p /etc/systemd/system/bluetooth.target.wants/
+$debug ln -sf /usr/lib/systemd/system/bluetooth.service /etc/systemd/system/bluetooth.target.wants/bluetooth.service
+$debug cd /etc
+$debug git add /etc/bluetooth/main.conf /etc/systemd/system/dbus-org.bluez.service /etc/systemd/system/bluetooth.target.wants/bluetooth.service
+$debug git commit --author="$GIT_AUTHOR" -m 'configs and enables bluetooth'
+
+
+### ROOT USER ###
+echo "Enter root password for $HOSTNAME:"
+$debug passwd
+
+$debug cd /etc
+$debug git add /etc/shadow /etc/shadow-
+$debug git commit --author="$GIT_AUTHOR" -m "sets root password"
+
+
+### DOT FILES ###
+DOT_FILES_LOCATION=/etc/archaic_dots
+$debug mkdir -p $DOT_FILES_LOCATION
+$debug cp /root/configs/bash_profile $DOT_FILES_LOCATION/
+$debug cp /root/configs/bashrc       $DOT_FILES_LOCATION/
+$debug cp /root/configs/inputrc      $DOT_FILES_LOCATION/
+
+$debug ln -sf "$DOT_FILES_LOCATION/bash_profile" /root/.bash_profile
+$debug ln -sf "$DOT_FILES_LOCATION/bashrc"       /root/.bashrc
+$debug ln -sf "$DOT_FILES_LOCATION/inputrc"      /root/.inputrc
+
+$debug cd /etc
+$debug git add "$DOT_FILES_LOCATION/*"
+$debug git commit --author="$GIT_AUTHOR" -m 'adds archaic basic dotfiles'
+
+### DESKTOP ###
+if [[ $HOSTNAME != "vaultos" ]]
+then
+        read -p "Enter main non-root username: " USER_NAME
+        $debug useradd -m -s /bin/bash -G wheel,log,rfkill,sys,users "$USER_NAME"
+        $debug passwd -d -e "$USER_NAME"
+
+        $debug sed 's/^# \(%wheel ALL=(ALL) ALL.*\)/\1/' -i /etc/sudoers
+
+        $debug cd /etc
+        $debug git add /etc/group /etc/group- /etc/gshadow /etc/gshadow- /etc/passwd /etc/passwd- /etc/shadow /etc/shadow- /etc/sudoers
+        $debug git commit --author="$GIT_AUTHOR" -m "creates user $USER_NAME"
+
+        $debug ln -sf "$DOT_FILES_LOCATION/bash_profile" "/home/$USER_NAME/.bash_profile"
+        $debug ln -sf "$DOT_FILES_LOCATION/bashrc"       "/home/$USER_NAME/.bashrc"
+        $debug ln -sf "$DOT_FILES_LOCATION/inputrc"      "/home/$USER_NAME/.inputrc"
+
+        $debug bash -c "cat /root/xorg_pkgs | xargs pacman --noconfirm -S"
+        $debug cd /etc
+        $debug git commit -a --author="$GIT_AUTHOR" -m 'updates all modified files by pacman'
+
+        $debug cp /root/configs/xmonad.hs $DOT_FILES_LOCATION/
+        $debug mkdir -p "/home/$USER_NAME/.xmonad"
+        $debug ln -sf "$DOT_FILES_LOCATION/xmonad.hs" "/home/$USER_NAME/.xmonad/xmonad.hs"
+
+        $debug cp /root/configs/Xresources   $DOT_FILES_LOCATION/
+        $debug cp /root/configs/xbindkeysrc  $DOT_FILES_LOCATION/
+        $debug cp /root/configs/Xmodmap      $DOT_FILES_LOCATION/
+        $debug cp /root/configs/xinitrc      $DOT_FILES_LOCATION/
+        $debug cp /root/configs/brillo_subir $DOT_FILES_LOCATION/
+        $debug cp /root/configs/brillo_bajar $DOT_FILES_LOCATION/
+        $debug cp -r /root/configs/xmobar    $DOT_FILES_LOCATION/
+
+        $debug ln -sf "$DOT_FILES_LOCATION/xinitrc" "/home/$USER_NAME/.xinitrc"
+        $debug chown -R "$USER_NAME:$USER_NAME" "/home/$USER_NAME"
+fi
+
+$debug cd /etc
+$debug git add "$DOT_FILES_LOCATION/*"
+$debug git commit --author="$GIT_AUTHOR" -m 'adds more archaic dotfiles'
+
+$debug cd /etc
+$debug git config user.name "root"
+$debug git config user.email "root@$HOSTNAME"

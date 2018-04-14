@@ -1,0 +1,12 @@
+Config { font = "xft:xos4 Terminus:pixelsize=12:antialias=true:hinting=true"
+       , bgColor = "black"
+       , fgColor = "grey"
+       , position = TopW L 30
+       , lowerOnStart = True
+       , commands = [
+                    Run StdinReader
+                    ]
+       , sepChar = "%"
+       , alignSep = "}{"
+       , template = "%StdinReader%}{"
+       }

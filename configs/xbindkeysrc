@@ -1,0 +1,21 @@
+# 2015.09.19
+
+# Subir volumen
+"pactl set-sink-volume @DEFAULT_SINK@ +5% && (pactl list sinks | grep Volume | awk 'NR==1 {print $5}'; sleep 1) | /usr/bin/xmobar -o -t '}<fc=#ffff00>%StdinReader%</fc>{' -c '[Run StdinReader]'"
+	XF86AudioRaiseVolume
+
+# Bajar volumen
+"pactl set-sink-volume @DEFAULT_SINK@ -5% && (pactl list sinks | grep Volume | awk 'NR==1 {print $5}'; sleep 1) | /usr/bin/xmobar -o -t '}<fc=#ffff00>%StdinReader%</fc>{' -c '[Run StdinReader]'"
+	XF86AudioLowerVolume
+
+# Mute
+"pactl set-sink-mute @DEFAULT_SINK@ toggle"
+	XF86AudioMute
+
+# Subir Brillo
+"/etc/archaic_dots/brillo_subir"
+	XF86MonBrightnessUp
+
+# Bajar Brillo
+"/etc/archaic_dots/brillo_bajar"
+	XF86MonBrightnessDown

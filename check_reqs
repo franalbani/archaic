@@ -1,0 +1,6 @@
+#!/bin/bash
+
+while read -r req
+do
+    which "$req" > /dev/null || { echo "$req not found. Aborting."; exit 1; }
+done < req_bins.txt

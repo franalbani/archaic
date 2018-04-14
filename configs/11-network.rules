@@ -1,0 +1,2 @@
+SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="CABLE_WILDCARD", NAME="cable"
+SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="WIFI_WILDCARD", NAME="wifi"

@@ -1,0 +1,30 @@
+#!/bin/bash
+
+xrdb -merge -I$HOME /etc/archaic_dots/Xresources
+
+setxkbmap -option terminate:ctrl_alt_bksp
+
+setxkbmap latam
+
+xsetroot -cursor_name left_ptr
+
+xset r rate 250 30
+
+xbindkeys -f /etc/archaic_dots/xbindkeysrc
+
+xmodmap /etc/archaic_dots/Xmodmap
+
+urxvtd -q -o -f &
+
+thunar --daemon &
+
+xmobar -x 0 /etc/archaic_dots/xmobar/botbar &
+
+NMONITORES=$(xrandr -q | grep ' connected' | wc -l)
+if [[ $NMONITORES -gt 1 ]]
+then
+    xrandr --output eDP1 --auto --primary --output HDMI2 --auto --above eDP1
+    xmobar -x 1 /etc/archaic_dots/xmobar/botbar &
+fi
+
+xmonad

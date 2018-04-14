@@ -1,0 +1,3 @@
+#!/bin/sh
+# 2015.09.22
+xbacklight -inc 5 && (xbacklight; sleep 1) | /usr/bin/xmobar -o -t '}<fc=#ffff00>%StdinReader%</fc>{' -c '[Run StdinReader]'

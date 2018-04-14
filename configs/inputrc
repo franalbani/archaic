@@ -1,0 +1,13 @@
+$include /etc/inputrc
+
+# 2018.03.18: recorrer sólo comandos que coinciden
+# con lo ya ingresado:
+"\e[A":history-search-backward
+"\e[B":history-search-forward
+
+# 2018.03.18: colorear archivos según LS_COLORS
+set colored-stats On
+
+# 2018.03.18: agilizar
+set show-all-if-ambiguous On
+set show-all-if-unmodified On

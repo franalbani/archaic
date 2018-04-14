@@ -1,0 +1,199 @@
+#!/bin/bash
+
+# Print commands:
+set -x
+
+# Abort if any required binary is not found:
+./check_reqs || { echo "Requirements unmet. Aborting."; exit 1; }
+
+# Every "dangerous" line should start with $debug,
+# so you can run it in "dry-mode" to test consistency.
+# After feeling courageous enough, uncomment the second next line:
+debug=echo
+# debug=
+
+loadkeys la-latin1
+
+### Carefully edit these variables: ###
+HOSTNAME=shannon
+# Device in which installation will take place:
+DEVICE=/dev/nvme0n1
+# Already existing EFI partition (e.g., made by a Windows install):
+EFI=${DEVICE}p1
+# Already existing Windows recovery partition:
+WINREC=${DEVICE}p4
+# (to be created) Main Arch Linux LUKS+LVM partition:
+LUKS_LVM=${DEVICE}p5
+# (to be created) Secondary (non-encrypted) Arch Linux partition:
+SEC_ARCH=${DEVICE}p6
+BKP_SCP_OUTSIDE_DEST=some_user@some_host:/tmp
+###
+
+ls $DEVICE $EFI $WINREC || { echo "Required partitions missing. Aborting."; exit 1; }
+
+# Ideally, you should not need to edit this variables:
+BKP_DEST=/tmp/bkps
+# LVM Volume Group name:
+VG_NAME=vg${HOSTNAME}
+# Installation date, for naming backups:
+TODAY=$(date +%Y.%m.%d)
+
+# Location of the script to be run inside Arch chroot:
+INSIDE_SCRIPT=_inside_arch_chroot
+
+# Packets to be installed with pacstrap to both systems:
+PACKETS="base iw wpa_supplicant dialog refind-efi terminus-font vim etckeeper xdelta3 bash-completion openssh htop sudo hddtemp avahi nss-mdns acpi bluez bluez-utils most"
+
+# Make CTRL+C interrupt whole script:
+trap "exit 1" INT
+# Stop script if any command fails:
+set -e
+
+# Backups dir:
+$debug mkdir -p $BKP_DEST
+
+# GPT table, before any change is made:
+$debug sgdisk --backup="$BKP_DEST/${TODAY}-${HOSTNAME}_gpt.bkp" $DEVICE
+
+# EFI raw partition:
+$debug bash -c "dd if=$EFI | gzip > $BKP_DEST/${TODAY}-${HOSTNAME}_efi_partition.img.gz"
+# EFI partition files:
+$debug mount $EFI /mnt
+$debug tar cfz "$BKP_DEST/${TODAY}-${HOSTNAME}_efi_partition_files.tar.gz" /mnt
+$debug umount /mnt
+
+# Windows recovery partition files:
+$debug mount $WINREC /mnt
+$debug tar cfz "$BKP_DEST/${TODAY}-${HOSTNAME}_winrec_partition_files.tar.gz" /mnt
+$debug umount /mnt
+
+### Interactive partition creation ###
+# TODO: automate this:
+PARTITIONS_READY=no
+while [ $PARTITIONS_READY = "no" ]
+do
+    # Create one for LUKS+LVM ("Linux LVM" type) and one for SEC_ARCH ("Linux")
+    $debug cfdisk $DEVICE
+    echo "This is the output of fdisk -l $DEVICE:"
+    $debug fdisk -l $DEVICE
+    echo
+    echo "$LUKS_LVM must be where LUKS+LVM for Main Arch Linux will be set."
+    echo "$SEC_ARCH must be where Secondary Arch Linux will be installed."
+    echo
+    read -p "Is this correct? [yes/no]: " PARTITIONS_READY
+done
+
+# Backup GPT Table after manual modifications:
+$debug sgdisk --backup="$BKP_DEST/${TODAY}-${HOSTNAME}_gpt_after_manual_modifications.bkp" $DEVICE
+
+# Send backups to the outside:
+echo "Sending backups through scp to $BKP_SCP_OUTSIDE_DEST"
+$debug scp -r $BKP_DEST $BKP_SCP_OUTSIDE_DEST
+
+# Sets LUKS:
+$debug cryptsetup luksFormat --type luks2 $LUKS_LVM
+$debug cryptsetup open $LUKS_LVM cryptlvm
+
+# Set LVM Physical Volume on top of LUKS:
+$debug pvcreate /dev/mapper/cryptlvm
+$debug vgcreate $VG_NAME /dev/mapper/cryptlvm
+
+# Create main Arch Linux Logical Volumes:
+$debug lvcreate -L  2GiB $VG_NAME -n root
+$debug lvcreate -L 20GiB $VG_NAME -n usr
+$debug lvcreate -L 10GiB $VG_NAME -n var
+$debug lvcreate -L 20GiB $VG_NAME -n home
+
+# Format those volumes:
+$debug mkfs.ext4 /dev/${VG_NAME}/root
+$debug mkfs.ext4 /dev/${VG_NAME}/usr
+$debug mkfs.ext4 /dev/${VG_NAME}/var
+$debug mkfs.ext4 /dev/${VG_NAME}/home
+
+# Prepare mount points for arch-chroot:
+$debug mount /dev/${VG_NAME}/root /mnt
+$debug mkdir -p /mnt/boot
+$debug mkdir -p /mnt/usr
+$debug mkdir -p /mnt/var
+$debug mkdir -p /mnt/home
+$debug mount /dev/${VG_NAME}/usr /mnt/usr
+$debug mount /dev/${VG_NAME}/var /mnt/var
+$debug mount /dev/${VG_NAME}/home /mnt/home
+$debug mount $EFI /mnt/boot
+
+# Don't put "" around $PACKETS; it should expand with its spaces.
+$debug pacstrap /mnt $PACKETS --force
+$debug bash -c "genfstab -U /mnt >> /mnt/etc/fstab"
+
+echo "MAIN ARCH LINUX INSTALLATION"
+
+$debug cp $INSIDE_SCRIPT /mnt/root/
+$debug cp -r configs /mnt/root/
+$debug cp xorg_pkgs /mnt/root/
+$debug arch-chroot /mnt /root/$INSIDE_SCRIPT $HOSTNAME linux
+$debug rm /mnt/root/$INSIDE_SCRIPT
+$debug umount -R /mnt
+
+
+### Secondary Arch ###
+
+$debug mkfs.ext4 $SEC_ARCH
+
+# Mount Main Arch Installation /var to access pacman cache:
+MAIN_VAR=/tmp/main_var
+$debug mkdir -p $MAIN_VAR
+$debug mount /dev/${VG_NAME}/var $MAIN_VAR
+
+$debug mount $SEC_ARCH /mnt
+$debug mkdir -p /mnt/boot
+$debug mount $EFI /mnt/boot
+$debug mkdir -p /mnt/var/cache/pacman/pkg/
+# TODO: there must be a better way:
+# Copy main pacman cache to avoid re-downloading packages:
+$debug cp $MAIN_VAR/cache/pacman/pkg/* /mnt/var/cache/pacman/pkg/
+# Secondary Arch will use linux-lts kernel to be able to share /boot partition
+# FIXME: the ignore switch is not enought:
+echo ""
+echo "*** pacman will ask you if you want to install linux: TELL HIM NO ***"
+echo ""
+$debug sleep 3
+# Don't put "" around $PACKETS; it should expand with its spaces.
+$debug pacstrap -i /mnt $PACKETS linux-lts --force --ignore linux
+$debug bash -c "genfstab -U /mnt >> /mnt/etc/fstab"
+
+echo "SECONDARY ARCH LINUX INSTALLATION"
+
+$debug cp $INSIDE_SCRIPT /mnt/root
+$debug cp -r configs /mnt/root/
+# Secondary Arch hostname will be 'vaultos' for Vault OS.
+$debug arch-chroot /mnt /root/$INSIDE_SCRIPT vaultos linux-lts $debug
+$debug rm /mnt/root/$INSIDE_SCRIPT
+
+
+### REFIND ###
+$debug arch-chroot /mnt refind-install
+REFIND_CONF=/mnt/boot/EFI/refind/refind.conf
+$debug sed 's/^\(timeout.*\)/timeout 3/' -i "$REFIND_CONF"
+$debug sed '$ a\resolution 1920 1080'    -i "$REFIND_CONF"
+
+$debug rm /mnt/boot/refind_linux.conf
+
+LUKS_LVM_UUID=$(blkid -o export $LUKS_LVM | awk '/^UUID/' | cut -d= -f2)
+SEC_ARCH_UUID=$(blkid -o export $SEC_ARCH | awk '/^UUID/' | cut -d= -f2)
+BOOT_UUID=$(blkid -o export $EFI | awk '/^UUID/' | cut -d= -f2)
+
+TMP_STANZA=/tmp/refind_stanza
+
+$debug cp refind_stanza "$TMP_STANZA"
+
+$debug sed "/.*WC_BOOT_UUID.*/ s/WC_BOOT_UUID/$BOOT_UUID/g"             -i "$TMP_STANZA"
+$debug sed "/.*WC_LUKS_LVM_UUID.*/ s/WC_LUKS_LVM_UUID/$LUKS_LVM_UUID/g" -i "$TMP_STANZA"
+$debug sed "/.*WC_VG_NAME.*/ s/WC_VG_NAME/$VG_NAME/g"                   -i "$TMP_STANZA"
+$debug sed "/.*WC_SEC_ARCH_UUID.*/ s/WC_SEC_ARCH_UUID/$SEC_ARCH_UUID/g" -i "$TMP_STANZA"
+
+$debug bash -c "cat $TMP_STANZA >> $REFIND_CONF "
+
+$debug umount -R /mnt
+
+echo "Cross fingers, reboot and if anybody asks: we never met."
+echo "Reboot when ready."

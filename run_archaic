@@ -42,7 +42,7 @@ TODAY=$(date +%Y.%m.%d)
 INSIDE_SCRIPT=_inside_arch_chroot
 
 # Packets to be installed with pacstrap to both systems:
-PACKETS="base iw wpa_supplicant dialog refind-efi terminus-font vim etckeeper xdelta3 bash-completion openssh htop sudo hddtemp avahi nss-mdns acpi bluez bluez-utils most"
+PACKETS="base iw wpa_supplicant dialog refind-efi terminus-font vim etckeeper xdelta3 bash-completion openssh htop sudo hddtemp avahi nss-mdns acpi bluez bluez-utils most unzip"
 
 # Make CTRL+C interrupt whole script:
 trap "exit 1" INT

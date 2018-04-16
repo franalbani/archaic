@@ -33,12 +33,19 @@ Arch Automatic Installation Commands
 
 If you need to modify the code, remember: [shellcheck](https://github.com/koalaman/shellcheck) is your friend.
 
+## In case of errors
+
+To restart the process, remember to:
+- delete `/boot/EFI/refind/`
+- delete all kernels and initramfs in `/boot/`
+
 ## Inspiration
 
 - https://shirotech.com/linux/how-to-automate-arch-linux-installation
 
 ## Wanna help?
 
+- Better diagnose of errors.
 - Smarter pacman repository to avoid redownloading packages.
 - Remove lot of duplicate and ugly bash code.
 - Ease testing with virtualization.

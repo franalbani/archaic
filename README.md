@@ -39,6 +39,8 @@ To restart the process, remember to:
 - delete `/boot/EFI/refind/`
 - delete all kernels and initramfs in `/boot/`
 
+Full restart from initial conditions is recommended, but if time needs to be saved, careful commenting of sections can be made in scripts (can be very challenging).
+
 ## Inspiration
 
 - https://shirotech.com/linux/how-to-automate-arch-linux-installation

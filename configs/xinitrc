@@ -27,4 +27,6 @@ then
     xmobar -x 1 /etc/archaic_dots/xmobar/botbar &
 fi
 
+pgrep redshift || redshift -l '-34.598:-58.416' &
+
 xmonad

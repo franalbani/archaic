@@ -29,4 +29,8 @@ fi
 
 pgrep redshift || redshift -l '-34.598:-58.416' &
 
+xscreensaver &
+
+xss-lock -- xscreensaver-command -lock &
+
 xmonad

@@ -156,10 +156,10 @@ $debug git commit --author="$GIT_AUTHOR" -m 'enhances pacman.conf'
 
 
 ### LID SWITCH BEHAVIOUR ###
-$debug sed -i '$ a\HandleLidSwitch=ignore' /etc/systemd/logind.conf
+$debug sed -i '$ a\HandleLidSwitch=lock' /etc/systemd/logind.conf
 $debug cd /etc
 $debug git add /etc/systemd/logind.conf
-$debug git commit --author="$GIT_AUTHOR" -m 'sets systemd to ignore LidSwitch'
+$debug git commit --author="$GIT_AUTHOR" -m 'sets LidSwitch to lock'
 
 
 ### BLUETOOTH ###

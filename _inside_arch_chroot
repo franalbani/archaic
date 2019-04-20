@@ -169,6 +169,13 @@ $debug git add /etc/systemd/logind.conf
 $debug git commit --author="$GIT_AUTHOR" -m 'sets PowerKey to suspend'
 
 
+### PERSISTENT JOURNAL  ###
+$debug sed -i '$ a\Storage=persistent' /etc/systemd/journald.conf
+$debug cd /etc
+$debug git add /etc/systemd/journald.conf
+$debug git commit --author="$GIT_AUTHOR" -m 'makes journal persistent'
+
+
 ### BLUETOOTH ###
 $debug sed 's/^#AutoEnable=false$/AutoEnable=true/' -i /etc/bluetooth/main.conf
 $debug ln -sf /usr/lib/systemd/system/bluetooth.service /etc/systemd/system/dbus-org.bluez.service

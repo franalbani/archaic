@@ -162,6 +162,13 @@ $debug git add /etc/systemd/logind.conf
 $debug git commit --author="$GIT_AUTHOR" -m 'sets LidSwitch to lock'
 
 
+### POWER BUTTON BEHAVIOUR ###
+$debug sed -i '$ a\HandlePowerKey=suspend' /etc/systemd/logind.conf
+$debug cd /etc
+$debug git add /etc/systemd/logind.conf
+$debug git commit --author="$GIT_AUTHOR" -m 'sets PowerKey to suspend'
+
+
 ### BLUETOOTH ###
 $debug sed 's/^#AutoEnable=false$/AutoEnable=true/' -i /etc/bluetooth/main.conf
 $debug ln -sf /usr/lib/systemd/system/bluetooth.service /etc/systemd/system/dbus-org.bluez.service

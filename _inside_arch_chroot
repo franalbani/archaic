@@ -243,6 +243,12 @@ then
         $debug cp /root/configs/brillo_bajar $DOT_FILES_LOCATION/
         $debug cp -r /root/configs/xmobar    $DOT_FILES_LOCATION/
 
+        ### TOUCHPAD TAPPING
+        $debug cp /root/configs/40-libinput.conf /etc/X11/xorg.conf.d/
+        $debug cd /etc
+        $debug git add /etc/X11/xorg.conf.d/40-libinput.conf
+        $debug git commit --author="$GIT_AUTHOR" -m 'enables touchpad tapping'
+
         $debug ln -sf "$DOT_FILES_LOCATION/xinitrc" "/home/$USER_NAME/.xinitrc"
         $debug chown -R "$USER_NAME:$USER_NAME" "/home/$USER_NAME"
 fi

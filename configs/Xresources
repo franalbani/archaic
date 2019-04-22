@@ -1,3 +1,7 @@
+! AUR package urxvt-resize-font-git required.
+! cp /usr/lib/urxvt/perl/resize-font ~/.urxvt/ext/
+URxvt.perl-ext-common: default,tabbed,matcher,resize-font,-tabbed
+
 ! do not scroll with output
 URxvt*scrollTtyOutput: false
 
@@ -11,7 +15,7 @@ URxvt*scrollTtyKeypress: true
 URxvt.secondaryScreen: 1
 URxvt.secondaryScroll: 0
 
-URxvt*font: xft:xos4 Terminus-14
+URxvt.font: xft:xos4 Terminus:pixelsize=18
 
 URxvt.cursorBlink:  true
 URxvt.scrollBar: false

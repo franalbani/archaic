@@ -19,13 +19,7 @@ urxvtd -q -o -f &
 thunar --daemon &
 
 xmobar -x 0 /etc/archaic_dots/xmobar/botbar &
-
-NMONITORES=$(xrandr -q | grep ' connected' | wc -l)
-if [[ $NMONITORES -gt 1 ]]
-then
-    xrandr --output eDP1 --auto --primary --output HDMI2 --auto --above eDP1
-    xmobar -x 1 /etc/archaic_dots/xmobar/botbar &
-fi
+xmobar -x 1 /etc/archaic_dots/xmobar/botbar &
 
 pgrep redshift || redshift -l '-34.598:-58.416' &
 

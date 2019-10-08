@@ -12,6 +12,10 @@
 "pactl set-sink-mute @DEFAULT_SINK@ toggle"
 	XF86AudioMute
 
+# Mic Mute
+"pactl set-source-mute @DEFAULT_SOURCE@ toggle"
+	XF86AudioMicMute
+
 # Subir Brillo
 "/etc/archaic_dots/brillo_subir"
 	XF86MonBrightnessUp

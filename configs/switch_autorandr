@@ -1,0 +1,10 @@
+#!/usr/bin/env python3
+
+from random import choice
+from subprocess import run, PIPE
+
+p = run('autorandr --detected'.split(), stdout=PIPE)
+
+modes = p.stdout.decode().split()
+
+run(['autorandr', choice(modes)])

@@ -23,3 +23,7 @@
 # Bajar Brillo
 "/etc/archaic_dots/brillo_bajar"
 	XF86MonBrightnessDown
+
+# Switch autorandr
+"/etc/archaic_dots/switch_autorandr"
+	XF86Display

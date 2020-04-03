@@ -64,6 +64,7 @@ myKeys = [
             ((mod4Mask, xK_Return), spawnLog "urxvtc"),
             ((mod4Mask, xK_a), spawnLog "dbus-launch thunar"),
             ((mod4Mask, xK_i), spawnLog "mplayer -vf screenshot -fps 30 tv://"),
+            ((mod4Mask, xK_s), spawnLog "scrot '/tmp/%Y.%m.%d.%H.%M.%S.png' -e 'kolourpaint $f && thunar /tmp'"),
 
             -- 2015.11.02: para evitar cerrar X sin querer:
             ((mod4Mask .|. shiftMask, xK_q), spawnLog "nada"),

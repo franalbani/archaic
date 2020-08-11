@@ -122,6 +122,12 @@ $debug cd /etc
 $debug git add /etc/systemd/system/multi-user.target.wants/sshd.service
 $debug git commit --author="$GIT_AUTHOR" -m 'adds sshd systemd enabled unit'
 
+### Enable SMART ###
+SMARTD_UNIT=/etc/systemd/system/multi-user.target.wants/smartd.service
+$debug ln -sf /usr/lib/systemd/system/smartd.service $SMARTD_UNIT
+$debug cd /etc
+$debug git add $SMARTD_UNIT
+$debug git commit --author="$GIT_AUTHOR" -m 'enables smartd'
 
 ### mkinitcpio ###
 HOOKS="base systemd autodetect modconf block keyboard sd-vconsole sd-encrypt sd-lvm2 filesystems keyboard fsck"

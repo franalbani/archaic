@@ -151,7 +151,6 @@ $debug git commit --author="$GIT_AUTHOR" -m 'configs and enables avahi'
 
 
 ### PACMAN OPTIONS ###
-$debug sed 's/^#\(UseDelta.*\)/\1/'        -i "$PACMAN_CONF"
 $debug sed 's/^#\(UseSyslog.*\)/\1/'       -i "$PACMAN_CONF"
 $debug sed 's/^#\(Color.*\)/\1/'           -i "$PACMAN_CONF"
 $debug sed 's/^#\(TotalDownload.*\)/\1/'   -i "$PACMAN_CONF"

@@ -41,8 +41,8 @@ TODAY=$(date +%Y.%m.%d.%H.%M.%S)
 # Location of the script to be run inside Arch chroot:
 INSIDE_SCRIPT=_inside_arch_chroot
 
-# Packets to be installed with pacstrap to both systems:
-PACKETS="base iw wpa_supplicant dialog refind-efi terminus-font vim etckeeper xdelta3 bash-completion openssh htop sudo hddtemp avahi nss-mdns acpi bluez bluez-utils most unzip"
+# Packages to be installed with pacstrap to both systems:
+PKGS="base iw wpa_supplicant dialog refind-efi terminus-font vim etckeeper xdelta3 bash-completion openssh htop sudo hddtemp avahi nss-mdns acpi bluez bluez-utils most unzip"
 
 # Make CTRL+C interrupt whole script:
 trap "exit 1" INT
@@ -121,8 +121,8 @@ $debug mount /dev/${VG_NAME}/var /mnt/var
 $debug mount /dev/${VG_NAME}/home /mnt/home
 $debug mount $EFI /mnt/boot
 
-# Don't put "" around $PACKETS; it should expand with its spaces.
-$debug pacstrap /mnt $PACKETS --force
+# Don't put "" around $PKGS; it should expand with its spaces.
+$debug pacstrap /mnt $PKGS --force
 $debug bash -c "genfstab -U /mnt >> /mnt/etc/fstab"
 
 echo "MAIN ARCH LINUX INSTALLATION"
@@ -157,8 +157,8 @@ echo ""
 echo "*** pacman will ask you if you want to install linux: TELL HIM NO ***"
 echo ""
 $debug sleep 3
-# Don't put "" around $PACKETS; it should expand with its spaces.
-$debug pacstrap -i /mnt $PACKETS linux-lts --force --ignore linux
+# Don't put "" around $PKGS; it should expand with its spaces.
+$debug pacstrap -i /mnt $PKGS linux-lts --force --ignore linux
 $debug bash -c "genfstab -U /mnt >> /mnt/etc/fstab"
 
 echo "SECONDARY ARCH LINUX INSTALLATION"

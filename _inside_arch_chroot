@@ -262,6 +262,12 @@ then
         $debug git add /etc/X11/xorg.conf.d/40-libinput.conf
         $debug git commit --author="$GIT_AUTHOR" -m 'enables touchpad tapping'
 
+        ### Makes pulseaudio autoconnect headset
+        $debug sed -i '$ a\.load-module module-switch-on-connect' /etc/pulse/default.pa
+        $debug cd /etc
+        $debug git add /etc/pulse/default.pa
+        $debug git commit --author="$GIT_AUTHOR" -m 'makes pulseaudio autoconnect headset'
+
         $debug ln -sf "$DOT_FILES_LOCATION/xinitrc" "/home/$USER_NAME/.xinitrc"
         $debug chown -R "$USER_NAME:$USER_NAME" "/home/$USER_NAME"
 fi

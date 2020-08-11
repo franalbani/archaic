@@ -186,6 +186,14 @@ $debug git add /etc/bluetooth/main.conf /etc/systemd/system/dbus-org.bluez.servi
 $debug git commit --author="$GIT_AUTHOR" -m 'configs and enables bluetooth'
 
 
+### DON'T CLEAR BOOT MESSAGES ###
+$debug mkdir -p /etc/systemd/system/getty@tty1.service.d/
+$debug bash -c "echo [Service]           >> /etc/systemd/system/getty@tty1.service.d/noclear.conf"
+$debug bash -c "echo TTYVTDisallocate=no >> /etc/systemd/system/getty@tty1.service.d/noclear.conf"
+$debug cd /etc
+$debug git add /etc/systemd/system/getty@tty1.service.d/noclear.conf
+$debug git commit --author="$GIT_AUTHOR" -m 'disables getty clearing boot messages'
+
 ### ROOT USER ###
 echo "Enter root password for $HOSTNAME:"
 $debug passwd

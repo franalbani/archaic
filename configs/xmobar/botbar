@@ -8,7 +8,6 @@ Config { font = "xft:xos4 Terminus:pixelsize=12:antialias=true:hinting=true"
 	,	Run Date      "<fc=#00ACE0>%H</fc>:%M:<fc=#00ACE0>%S</fc>"	"hora_bsas"			10
 	, 	Run Uptime    ["-t", "Brillando hace <fc=#00FF00><days>d <hours>:<minutes></fc>"]     300
 	, 	Run Com       "/etc/archaic_dots/xmobar/net"                   []  "ip_route"            30
-	, 	Run Weather   "SABE" ["-t","<tempC>ºC <pressure> hPa <skyCondition> <rh>","-L","20","-H","30","-n","yellow","-h","red","-l","lightblue"] 6000
 	, 	Run Memory    ["-t", "<usedratio>%",  "-L", "33", "-H", "66", "-l", "green",  "-n", "yellow", "-h", "red" ]   10
 	,	Run ThermalZone 0    ["-t", "<temp>ºC", "-L", "50", "-H", "60", "-l", "blue", "-n", "green", "-h", "red"]    50
     ,   Run MultiCpu        [ "--template" , "<total0>|<total1>|<total2>|<total3>|"

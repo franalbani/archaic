@@ -190,6 +190,11 @@ $debug cd /etc
 $debug git add /etc/bluetooth/main.conf /etc/systemd/system/dbus-org.bluez.service /etc/systemd/system/bluetooth.target.wants/bluetooth.service
 $debug git commit --author="$GIT_AUTHOR" -m 'configs and enables bluetooth'
 
+### Enables SYSRQ
+$debug cp /root/configs/99-sysctl.conf /etc/sysctl.d/
+$debug cd /etc
+$debug git add /etc/sysctl.d/99-sysctl.conf
+$debug git commit --author="$GIT_AUTHOR" -m 'enables kernel sysrq'
 
 ### DON'T CLEAR BOOT MESSAGES ###
 $debug mkdir -p /etc/systemd/system/getty@tty1.service.d/

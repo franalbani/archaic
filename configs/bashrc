@@ -96,3 +96,5 @@ then
 fi
 
 PS1="$UC[$W\t$UC][$W\u@\h$UC][$W\w"'$(__git_ps1 " (%s)")'"$UC]$RESET_COLOR\n\$ "
+
+PATH=~/.local/bin:$PATH

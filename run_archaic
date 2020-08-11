@@ -36,7 +36,7 @@ BKP_DEST=/tmp/bkps
 # LVM Volume Group name:
 VG_NAME=vg${HOSTNAME}
 # Installation date, for naming backups:
-TODAY=$(date +%Y.%m.%d)
+TODAY=$(date +%Y.%m.%d.%H.%M.%S)
 
 # Location of the script to be run inside Arch chroot:
 INSIDE_SCRIPT=_inside_arch_chroot

@@ -52,12 +52,12 @@ set -e
 # Backups dir:
 $debug mkdir -p $BKP_DEST
 
-# GPT table, before any change is made:
+# Backup GPT table, before any change is made:
 $debug sgdisk --backup="$BKP_DEST/${TODAY}-${HOSTNAME}_gpt.bkp" $DEVICE
 
-# EFI raw partition:
+# Backup EFI raw partition:
 $debug bash -c "dd if=$EFI | gzip > $BKP_DEST/${TODAY}-${HOSTNAME}_efi_partition.img.gz"
-# EFI partition files:
+# Backup EFI partition files:
 $debug mount $EFI /mnt
 $debug tar cfz "$BKP_DEST/${TODAY}-${HOSTNAME}_efi_partition_files.tar.gz" /mnt
 $debug umount /mnt
@@ -100,8 +100,8 @@ $debug vgcreate $VG_NAME /dev/mapper/cryptlvm
 
 # Create main Arch Linux Logical Volumes:
 $debug lvcreate -L  2GiB $VG_NAME -n root
-$debug lvcreate -L 20GiB $VG_NAME -n usr
-$debug lvcreate -L 10GiB $VG_NAME -n var
+$debug lvcreate -L 15GiB $VG_NAME -n usr
+$debug lvcreate -L 15GiB $VG_NAME -n var
 $debug lvcreate -L 20GiB $VG_NAME -n home
 
 # Format those volumes:

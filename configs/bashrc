@@ -40,7 +40,7 @@ export PAGER="/usr/bin/most -s"
 export BROWSER="/usr/bin/most -s"
 export EDITOR="vim"
 export VISUAL="vim"
-export GREP_COLOR="1;33"
+export GREP_COLOR="0;33"
 
 alias extraer='tar -xvpzf'
 alias rm='rm -i'

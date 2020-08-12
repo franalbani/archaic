@@ -9,7 +9,7 @@ set -x
 # Every "dangerous" line should start with $debug,
 # so you can run it in "dry-mode" to test consistency.
 # After feeling courageous enough, uncomment the second next line:
-debug=echo
+debug="echo"
 # debug=
 
 loadkeys la-latin1

@@ -31,7 +31,9 @@ Arch Automatic Installation Commands
 - Run `run_archaic` script and wait for input prompts.
 - Do not relax too much.
 
-If you need to modify the code, remember: [shellcheck](https://github.com/koalaman/shellcheck) is your friend.
+If you need to modify the code, remember: [shellcheck](https://github.com/koalaman/shellcheck) is your friend
+(but ignore SC2086 recommendation for `$PKGS`).
+
 
 ## In case of errors
 

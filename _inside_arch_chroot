@@ -278,7 +278,7 @@ then
         $debug git commit -m 'enables touchpad tapping'
 
         ### Makes pulseaudio autoconnect headset
-        $debug sed -i '$ a\.load-module module-switch-on-connect' /etc/pulse/default.pa
+        $debug sed -i '$ a\load-module module-switch-on-connect' /etc/pulse/default.pa
         $debug cd /etc
         $debug git add /etc/pulse/default.pa
         $debug git commit -m 'makes pulseaudio autoconnect headset'

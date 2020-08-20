@@ -152,11 +152,6 @@ $debug mkdir -p /mnt/var/cache/pacman/pkg/
 # Copy main pacman cache to avoid re-downloading packages:
 $debug cp $MAIN_VAR/cache/pacman/pkg/* /mnt/var/cache/pacman/pkg/
 # Secondary Arch will use linux-lts kernel to be able to share /boot partition
-# FIXME: the ignore switch is not enought:
-echo ""
-echo "*** pacman will ask you if you want to install linux: TELL HIM NO ***"
-echo ""
-$debug sleep 3
 # Don't put "" around $PKGS; it should expand with its spaces.
 $debug pacstrap -i /mnt linux-lts $PKGS
 $debug bash -c "genfstab -U /mnt >> /mnt/etc/fstab"

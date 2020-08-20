@@ -265,6 +265,7 @@ then
         $debug cp /root/configs/xinitrc      $DOT_FILES_LOCATION/
         $debug cp /root/configs/brillo_subir $DOT_FILES_LOCATION/
         $debug cp /root/configs/brillo_bajar $DOT_FILES_LOCATION/
+        $debug cp /root/configs/switch_autorandr $DOT_FILES_LOCATION/
         $debug cp -r /root/configs/xmobar    $DOT_FILES_LOCATION/
 
         $debug cd /etc

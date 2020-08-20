@@ -5,7 +5,6 @@ xorg-xinit
 xorg-xrandr
 xorg-xset
 xorg-xsetroot
-xorg-xbacklight
 xbindkeys
 xmonad
 xmonad-contrib
@@ -29,3 +28,4 @@ xss-lock
 xscreensaver
 autorandr
 kolourpaint
+acpilight

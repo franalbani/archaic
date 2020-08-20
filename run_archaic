@@ -122,7 +122,7 @@ $debug mount /dev/${VG_NAME}/home /mnt/home
 $debug mount $EFI /mnt/boot
 
 # Don't put "" around $PKGS; it should expand with its spaces.
-$debug pacstrap /mnt $PKGS --force
+$debug pacstrap /mnt $PKGS
 $debug bash -c "genfstab -U /mnt >> /mnt/etc/fstab"
 
 echo "MAIN ARCH LINUX INSTALLATION"

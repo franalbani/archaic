@@ -153,7 +153,7 @@ $debug mkdir -p /mnt/var/cache/pacman/pkg/
 $debug cp $MAIN_VAR/cache/pacman/pkg/* /mnt/var/cache/pacman/pkg/
 # Secondary Arch will use linux-lts kernel to be able to share /boot partition
 # Don't put "" around $PKGS; it should expand with its spaces.
-$debug pacstrap -i /mnt linux-lts $PKGS
+$debug pacstrap /mnt linux-lts $PKGS
 $debug bash -c "genfstab -U /mnt >> /mnt/etc/fstab"
 
 echo "SECONDARY ARCH LINUX INSTALLATION"

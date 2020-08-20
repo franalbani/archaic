@@ -36,6 +36,7 @@ fi
 export GIT_COMMITTER_NAME=archaic
 export GIT_COMMITTER_EMAIL=archaic@$HOSTNAME
 
+$debug cd /etc
 $debug etckeeper init
 # init automatically adds a lot of files
 $debug git config user.name $GIT_COMMITTER_NAME

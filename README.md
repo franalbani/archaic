@@ -26,9 +26,9 @@ Arch Automatic Installation Commands
 
 - Put a copy of this repo inside your **running** Live Arch Installation ISO.
 - Open `run_archaic` in a text editor, read it, check it, double-check it and edit the required variables. Left `$debug=` commented, so you can do a dry-run.
-- Run `run_archaic` script. It should be in **debug** mode so you can check that all text replacements went fine.
+- Run `run_archaic | tee /tmp/archaic.log` script. It should be in **debug** mode so you can check that all text replacements went fine.
 - Re-open `run_archaic` and uncomment the `debug=` line.
-- Run `run_archaic` script and wait for input prompts.
+- Run `run_archaic | tee /tmp/archaic.log` script and wait for input prompts.
 - Do not relax too much.
 
 If you need to modify the code, remember: [shellcheck](https://github.com/koalaman/shellcheck) is your friend

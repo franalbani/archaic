@@ -35,22 +35,25 @@ fi
 ### ETCKEEPER Initialization ###
 export GIT_COMMITTER_NAME=archaic
 export GIT_COMMITTER_EMAIL=archaic@$HOSTNAME
-GIT_AUTHOR="$GIT_COMMITTER_NAME <$GIT_COMMITTER_EMAIL>"
 
 $debug etckeeper init
+$debug git config user.name $GIT_COMMITTER_NAME
+$debug git config user.email $GIT_COMMITTER_EMAIL
+
+
 $debug cd /etc
 $debug git rm --cached --ignore-unmatch /etc/.updated
 $debug git rm --cached --ignore-unmatch /etc/resolv.conf
 $debug sed -i '$ a\.updated' $ETC_GITIGNORE
 $debug sed -i '$ a\resolv.conf' $ETC_GITIGNORE
 $debug git add /etc/.gitignore
-$debug git commit --author="$GIT_AUTHOR" -m 'Initial commit'
+$debug git commit -m 'Initial commit'
 
 # Prevents etckeeper from auto commiting:
 $debug sed -i '$ a\AVOID_COMMIT_BEFORE_INSTALL=1' $ETCKEEPER_CONF
 $debug sed -i '$ a\AVOID_DAILY_AUTOCOMMITS=1'     $ETCKEEPER_CONF
 $debug git add $ETCKEEPER_CONF
-$debug git commit --author="$GIT_AUTHOR" -m 'Prevents etckeeper from auto commiting'
+$debug git commit -m 'Prevents etckeeper from auto commiting'
 
 $debug ln -sf /usr/share/zoneinfo/America/Buenos_Aires "$ETC_LOCALTIME"
 $debug hwclock --systohc
@@ -59,7 +62,7 @@ $debug ln -sf /usr/lib/systemd/system/systemd-timesyncd.service /etc/systemd/sys
 $debug cd /etc
 # /etc/adjtime is in etckeeper .gitignore
 $debug git add /etc/systemd/system/sysinit.target.wants/systemd-timesyncd.service "$ETC_LOCALTIME"
-$debug git commit --author="$GIT_AUTHOR" -m 'sets timezone and ntp=True'
+$debug git commit -m 'sets timezone and ntp=True'
 
 
 ### LOCALE and KEYMAP
@@ -73,7 +76,7 @@ $debug bash -c "echo FONT=Lat2-Terminus16 >> $VCONSOLE_CONF "
 
 $debug cd /etc
 $debug git add "$LOCALE_GEN" "$LOCALE_CONF" "$VCONSOLE_CONF"
-$debug git commit --author="$GIT_AUTHOR" -m 'sets locale, keymap and vconsole font'
+$debug git commit -m 'sets locale, keymap and vconsole font'
 
 
 ### HOSTNAME ###
@@ -84,7 +87,7 @@ $debug sed -i '$ a\::1       localhost '"$HOSTNAME" $ETC_HOSTS
 
 $debug cd /etc
 $debug git add /etc/hostname "$ETC_HOSTS"
-$debug git commit --author="$GIT_AUTHOR" -m 'sets hostname'
+$debug git commit -m 'sets hostname'
 
 
 ### RENAMING Network interfaces ###
@@ -100,7 +103,7 @@ $debug sed "/.*WIFI_WILDCARD.*/ s/WIFI_WILDCARD/$WIRELESS_MAC/" -i "$UDEV_NW_RUL
 
 $debug cd /etc
 $debug git add "$UDEV_NW_RULE"
-$debug git commit --author="$GIT_AUTHOR" -m 'adds udev rule for changing network interfaces names'
+$debug git commit -m 'adds udev rule for changing network interfaces names'
 
 
 ### DHCP Client Daemon ###
@@ -113,28 +116,28 @@ $debug mkdir -p /etc/systemd/system/dhcpcd@.service.d/
 $debug cp /root/configs/dhcpcd-no-wait.conf /etc/systemd/system/dhcpcd@.service.d/
 $debug cd /etc
 $debug git add /etc/dhcpcd.conf /etc/systemd/system/multi-user.target.wants/dhcpcd@cable.service /etc/systemd/system/dhcpcd@.service.d/dhcpcd-no-wait.conf
-$debug git commit --author="$GIT_AUTHOR" -m 'adds dhcpcd@cable systemd unit'
+$debug git commit -m 'adds dhcpcd@cable systemd unit'
 
 
 ### Enable SSH Server ###
 $debug ln -sf /usr/lib/systemd/system/sshd.service /etc/systemd/system/multi-user.target.wants/sshd.service
 $debug cd /etc
 $debug git add /etc/systemd/system/multi-user.target.wants/sshd.service
-$debug git commit --author="$GIT_AUTHOR" -m 'adds sshd systemd enabled unit'
+$debug git commit -m 'adds sshd systemd enabled unit'
 
 ### Enable SMART ###
 SMARTD_UNIT=/etc/systemd/system/multi-user.target.wants/smartd.service
 $debug ln -sf /usr/lib/systemd/system/smartd.service $SMARTD_UNIT
 $debug cd /etc
 $debug git add $SMARTD_UNIT
-$debug git commit --author="$GIT_AUTHOR" -m 'enables smartd'
+$debug git commit -m 'enables smartd'
 
 ### mkinitcpio ###
 HOOKS="base systemd autodetect modconf block keyboard sd-vconsole sd-encrypt sd-lvm2 filesystems keyboard fsck"
 $debug sed "/^HOOKS=/ s/.*/HOOKS=($HOOKS)/" -i "$ETC_MKINITCPIO"
 $debug cd /etc
 $debug git add "$ETC_MKINITCPIO"
-$debug git commit --author="$GIT_AUTHOR" -m 'modifies mkinitcpio.conf HOOKS to suit systemd, LVM+LUKS and vconsole'
+$debug git commit -m 'modifies mkinitcpio.conf HOOKS to suit systemd, LVM+LUKS and vconsole'
 $debug mkinitcpio -p "$KERNEL"
 
 
@@ -147,7 +150,7 @@ $debug ln -sf /usr/lib/systemd/system/avahi-daemon.service /etc/systemd/system/d
 $debug sed "/^hosts:/ s/.*/hosts: $NSS_HOSTS/" -i /etc/nsswitch.conf
 $debug cd /etc
 $debug git add /etc/nsswitch.conf /etc/systemd/system/sockets.target.wants/avahi-daemon.socket /etc/systemd/system/multi-user.target.wants/avahi-daemon.service /etc/systemd/system/dbus-org.freedesktop.Avahi.service
-$debug git commit --author="$GIT_AUTHOR" -m 'configs and enables avahi'
+$debug git commit -m 'configs and enables avahi'
 
 
 ### PACMAN OPTIONS ###
@@ -157,28 +160,28 @@ $debug sed 's/^#\(TotalDownload.*\)/\1/'   -i "$PACMAN_CONF"
 $debug sed 's/^#\(VerbosePkgLists.*\)/\1/' -i "$PACMAN_CONF"
 $debug cd /etc
 $debug git add "$PACMAN_CONF"
-$debug git commit --author="$GIT_AUTHOR" -m 'enhances pacman.conf'
+$debug git commit -m 'enhances pacman.conf'
 
 
 ### LID SWITCH BEHAVIOUR ###
 $debug sed -i '$ a\HandleLidSwitch=lock' /etc/systemd/logind.conf
 $debug cd /etc
 $debug git add /etc/systemd/logind.conf
-$debug git commit --author="$GIT_AUTHOR" -m 'sets LidSwitch to lock'
+$debug git commit -m 'sets LidSwitch to lock'
 
 
 ### POWER BUTTON BEHAVIOUR ###
 $debug sed -i '$ a\HandlePowerKey=suspend' /etc/systemd/logind.conf
 $debug cd /etc
 $debug git add /etc/systemd/logind.conf
-$debug git commit --author="$GIT_AUTHOR" -m 'sets PowerKey to suspend'
+$debug git commit -m 'sets PowerKey to suspend'
 
 
 ### PERSISTENT JOURNAL  ###
 $debug sed -i '$ a\Storage=persistent' /etc/systemd/journald.conf
 $debug cd /etc
 $debug git add /etc/systemd/journald.conf
-$debug git commit --author="$GIT_AUTHOR" -m 'makes journal persistent'
+$debug git commit -m 'makes journal persistent'
 
 
 ### BLUETOOTH ###
@@ -188,13 +191,13 @@ $debug mkdir -p /etc/systemd/system/bluetooth.target.wants/
 $debug ln -sf /usr/lib/systemd/system/bluetooth.service /etc/systemd/system/bluetooth.target.wants/bluetooth.service
 $debug cd /etc
 $debug git add /etc/bluetooth/main.conf /etc/systemd/system/dbus-org.bluez.service /etc/systemd/system/bluetooth.target.wants/bluetooth.service
-$debug git commit --author="$GIT_AUTHOR" -m 'configs and enables bluetooth'
+$debug git commit -m 'configs and enables bluetooth'
 
 ### Enables SYSRQ
 $debug cp /root/configs/99-sysctl.conf /etc/sysctl.d/
 $debug cd /etc
 $debug git add /etc/sysctl.d/99-sysctl.conf
-$debug git commit --author="$GIT_AUTHOR" -m 'enables kernel sysrq'
+$debug git commit -m 'enables kernel sysrq'
 
 ### DON'T CLEAR BOOT MESSAGES ###
 $debug mkdir -p /etc/systemd/system/getty@tty1.service.d/
@@ -202,7 +205,7 @@ $debug bash -c "echo [Service]           >> /etc/systemd/system/getty@tty1.servi
 $debug bash -c "echo TTYVTDisallocate=no >> /etc/systemd/system/getty@tty1.service.d/noclear.conf"
 $debug cd /etc
 $debug git add /etc/systemd/system/getty@tty1.service.d/noclear.conf
-$debug git commit --author="$GIT_AUTHOR" -m 'disables getty clearing boot messages'
+$debug git commit -m 'disables getty clearing boot messages'
 
 ### ROOT USER ###
 echo "Enter root password for $HOSTNAME:"
@@ -210,7 +213,7 @@ $debug passwd
 
 $debug cd /etc
 $debug git add /etc/shadow /etc/shadow-
-$debug git commit --author="$GIT_AUTHOR" -m "sets root password"
+$debug git commit -m "sets root password"
 
 
 ### DOT FILES ###
@@ -226,7 +229,7 @@ $debug ln -sf "$DOT_FILES_LOCATION/inputrc"      /root/.inputrc
 
 $debug cd /etc
 $debug git add "$DOT_FILES_LOCATION/*"
-$debug git commit --author="$GIT_AUTHOR" -m 'adds archaic basic dotfiles'
+$debug git commit -m 'adds archaic basic dotfiles'
 
 ### DESKTOP ###
 if [[ $HOSTNAME != "vaultos" ]]
@@ -239,7 +242,7 @@ then
 
         $debug cd /etc
         $debug git add /etc/group /etc/group- /etc/gshadow /etc/gshadow- /etc/passwd /etc/passwd- /etc/shadow /etc/shadow- /etc/sudoers
-        $debug git commit --author="$GIT_AUTHOR" -m "creates user $USER_NAME"
+        $debug git commit -m "creates user $USER_NAME"
 
         $debug ln -sf "$DOT_FILES_LOCATION/bash_profile" "/home/$USER_NAME/.bash_profile"
         $debug ln -sf "$DOT_FILES_LOCATION/bashrc"       "/home/$USER_NAME/.bashrc"
@@ -247,7 +250,7 @@ then
 
         $debug bash -c "cat /root/xorg_pkgs | xargs pacman --noconfirm -S"
         $debug cd /etc
-        $debug git commit -a --author="$GIT_AUTHOR" -m 'updates all modified files by pacman'
+        $debug git commit -a -m 'updates all modified files by pacman'
 
         $debug cp /root/configs/xmonad.hs $DOT_FILES_LOCATION/
         $debug mkdir -p "/home/$USER_NAME/.xmonad"
@@ -265,13 +268,13 @@ then
         $debug cp /root/configs/40-libinput.conf /etc/X11/xorg.conf.d/
         $debug cd /etc
         $debug git add /etc/X11/xorg.conf.d/40-libinput.conf
-        $debug git commit --author="$GIT_AUTHOR" -m 'enables touchpad tapping'
+        $debug git commit -m 'enables touchpad tapping'
 
         ### Makes pulseaudio autoconnect headset
         $debug sed -i '$ a\.load-module module-switch-on-connect' /etc/pulse/default.pa
         $debug cd /etc
         $debug git add /etc/pulse/default.pa
-        $debug git commit --author="$GIT_AUTHOR" -m 'makes pulseaudio autoconnect headset'
+        $debug git commit -m 'makes pulseaudio autoconnect headset'
 
         $debug ln -sf "$DOT_FILES_LOCATION/xinitrc" "/home/$USER_NAME/.xinitrc"
         $debug chown -R "$USER_NAME:$USER_NAME" "/home/$USER_NAME"
@@ -279,7 +282,7 @@ fi
 
 $debug cd /etc
 $debug git add "$DOT_FILES_LOCATION/*"
-$debug git commit --author="$GIT_AUTHOR" -m 'adds more archaic dotfiles'
+$debug git commit -m 'adds more archaic dotfiles'
 
 $debug cd /etc
 $debug git config user.name "root"

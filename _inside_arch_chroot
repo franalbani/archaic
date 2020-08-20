@@ -37,6 +37,7 @@ export GIT_COMMITTER_NAME=archaic
 export GIT_COMMITTER_EMAIL=archaic@$HOSTNAME
 
 $debug etckeeper init
+# init automatically adds a lot of files
 $debug git config user.name $GIT_COMMITTER_NAME
 $debug git config user.email $GIT_COMMITTER_EMAIL
 
@@ -48,6 +49,7 @@ $debug sed -i '$ a\.updated' $ETC_GITIGNORE
 $debug sed -i '$ a\resolv.conf' $ETC_GITIGNORE
 $debug git add /etc/.gitignore
 $debug git commit -m 'Initial commit'
+$debug git gc
 
 # Prevents etckeeper from auto commiting:
 $debug sed -i '$ a\AVOID_COMMIT_BEFORE_INSTALL=1' $ETCKEEPER_CONF

@@ -28,6 +28,7 @@ Arch Automatic Installation Commands
 - Open `run_archaic` in a text editor, read it, check it, double-check it and edit the required variables. Left `$debug=` commented, so you can do a dry-run.
 - Run `run_archaic | tee /tmp/archaic.log` script. It should be in **debug** mode so you can check that all text replacements went fine.
 - Re-open `run_archaic` and uncomment the `debug=` line.
+- Edit `xorg_pkgs` to reflect your video driver.
 - Run `run_archaic | tee /tmp/archaic.log` script and wait for input prompts.
 - Do not relax too much.
 

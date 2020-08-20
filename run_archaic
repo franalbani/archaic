@@ -158,7 +158,7 @@ echo "*** pacman will ask you if you want to install linux: TELL HIM NO ***"
 echo ""
 $debug sleep 3
 # Don't put "" around $PKGS; it should expand with its spaces.
-$debug pacstrap -i /mnt $PKGS linux-lts
+$debug pacstrap -i /mnt linux-lts $PKGS
 $debug bash -c "genfstab -U /mnt >> /mnt/etc/fstab"
 
 echo "SECONDARY ARCH LINUX INSTALLATION"

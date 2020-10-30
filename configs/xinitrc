@@ -27,4 +27,6 @@ xscreensaver &
 
 xss-lock -- xscreensaver-command -lock &
 
-xmonad
+/etc/archaic_dots/switch_autorandr &
+
+xmonad || xmonad --recompile && xmonad

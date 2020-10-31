@@ -36,6 +36,8 @@ export HISTFILE=~/.bash_eternal_history
 PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
 # End copy-paste
 
+export HISTCONTROL=ignorespace
+
 export PAGER="/usr/bin/most -s"
 export BROWSER="/usr/bin/most -s"
 export EDITOR="vim"

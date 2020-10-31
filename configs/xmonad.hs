@@ -71,7 +71,6 @@ myKeys = [
 
             -- 2015.11.15:
             ((mod4Mask, xK_w),  nextScreen),
-            ((mod4Mask, xK_q),  prevScreen),
 
             ((mod4Mask, xK_x), kill),
             ((mod4Mask, xK_p), shellPromptHere shellPromptConfig),

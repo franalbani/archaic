@@ -1,0 +1,21 @@
+#!/usr/bin/bash
+
+FILES="inputrc
+bashrc
+bash_profile
+xinitrc
+Xmodmap
+Xresources
+brillo_subir
+brillo_bajar
+xmonad.hs
+xbindkeysrc
+switch_autorandr
+xmobar/botbar
+xmobar/topbar
+xmobar/net"
+
+DIFF="git --no-pager diff"
+# DIFF="git diff"
+
+echo "$FILES" | xargs -L 1 -I file $DIFF configs/file /etc/archaic_dots/file

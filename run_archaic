@@ -75,7 +75,7 @@ do
     # Create one for LUKS+LVM ("Linux LVM" type) and one for SEC_ARCH ("Linux")
     $debug cfdisk $DEVICE
     echo "This is the output of fdisk -l $DEVICE:"
-    $debug fdisk -l $DEVICE
+    fdisk -l $DEVICE
     echo
     echo "$LUKS_LVM must be where LUKS+LVM for Main Arch Linux will be set."
     echo "$SEC_ARCH must be where Secondary Arch Linux will be installed."

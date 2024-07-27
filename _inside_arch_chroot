@@ -31,6 +31,10 @@ then
     exit 1
 fi
 
+### HOSTNAME ###
+$debug bash -c "echo $HOSTNAME > /etc/hostname"
+$debug sed -i '$ a\127.0.0.1 localhost '"$HOSTNAME" $ETC_HOSTS
+$debug sed -i '$ a\::1       localhost '"$HOSTNAME" $ETC_HOSTS
 
 ### ETCKEEPER Initialization ###
 export GIT_COMMITTER_NAME=archaic
@@ -80,17 +84,6 @@ $debug bash -c "echo FONT=Lat2-Terminus16 >> $VCONSOLE_CONF "
 $debug cd /etc
 $debug git add "$LOCALE_GEN" "$LOCALE_CONF" "$VCONSOLE_CONF"
 $debug git commit -m 'sets locale, keymap and vconsole font'
-
-
-### HOSTNAME ###
-$debug bash -c "echo $HOSTNAME > /etc/hostname"
-
-$debug sed -i '$ a\127.0.0.1 localhost '"$HOSTNAME" $ETC_HOSTS
-$debug sed -i '$ a\::1       localhost '"$HOSTNAME" $ETC_HOSTS
-
-$debug cd /etc
-$debug git add /etc/hostname "$ETC_HOSTS"
-$debug git commit -m 'sets hostname'
 
 
 ### RENAMING Network interfaces ###

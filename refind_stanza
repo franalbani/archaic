@@ -17,7 +17,7 @@ menuentry "Arch Linux" {
 }
 
 menuentry "VaultOS" {
-    icon     /EFI/refind/icons/boot_linux.png
+    icon     /EFI/refind/icons/os_vaultos.png
     volume   WC_BOOT_UUID
     loader   /vmlinuz-linux-lts
     initrd   /initramfs-linux-lts.img

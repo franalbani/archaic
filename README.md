@@ -16,7 +16,7 @@ Arch Automatic Installation Commands
 - Secure Boot disabled from UEFI.
 - GPT disk.
 - Existing EFI partition (only tested with the one created by Windows 10 in a Lenovo Thinkpad)
-- Free un-partitioned disk space ready to be asigned according to instructions. See comments inside `run_archaic`.
+- Free un-partitioned disk space ready to be asigned according to instructions. See comments inside [`run_archaic`](run_archaic).
 - Live Arch Installation ISO (only tested with a USB stick on March 2018).
 - Internet conection.
 

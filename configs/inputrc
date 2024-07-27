@@ -11,3 +11,6 @@ set colored-stats On
 # 2018.03.18: agilizar
 set show-all-if-ambiguous On
 set show-all-if-unmodified On
+
+# 2021.01.14
+set bell-style none

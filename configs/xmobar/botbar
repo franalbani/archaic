@@ -1,30 +1,30 @@
-Config { font = "xft:xos4 Terminus:pixelsize=12:antialias=true:hinting=true"
+Config { font = "Terminus 12"
        , bgColor = "black"
        , fgColor = "grey"
        , position = BottomW R 100
        , lowerOnStart = True
        , commands = [
-		Run Date      "%A %d/%m"					"fecha"                	10
-	,	Run Date      "<fc=#00ACE0>%H</fc>:%M:<fc=#00ACE0>%S</fc>"	"hora_bsas"			10
-	, 	Run Uptime    ["-t", "Brillando hace <fc=#00FF00><days>d <hours>:<minutes></fc>"]     300
-	, 	Run Com       "/etc/archaic_dots/xmobar/net"                   []  "ip_route"            30
-	, 	Run Memory    ["-t", "<usedratio>%",  "-L", "33", "-H", "66", "-l", "green",  "-n", "yellow", "-h", "red" ]   10
-	,	Run ThermalZone 0    ["-t", "<temp>ºC", "-L", "50", "-H", "60", "-l", "blue", "-n", "green", "-h", "red"]    50
-    ,   Run MultiCpu        [ "--template" , "<total0>|<total1>|<total2>|<total3>|"
-                             , "--Low"      , "33"         -- units: %
-                             , "--High"     , "66"         -- units: %
-                             , "--low"      , "green"
-                             , "--normal"   , "yellow"
-                             , "--high"     , "red"
-                             , "-p"     , "3"
-                             ] 10
-        , Run CoreTemp       [ "--template" , "<core0> | <core1> | <core2>"
-                             , "--Low"      , "70"        -- units: °C
-                             , "--High"     , "80"        -- units: °C
-                             , "--low"      , "darkgreen"
-                             , "--normal"   , "darkorange"
-                             , "--high"     , "darkred"
-                             ] 50
+		Run Date	"%A %d/%m"					"fecha"                	600
+	,	Run Date	"<fc=#00ACE0>%H</fc>:%M:<fc=#00ACE0>%S</fc>"	"hora_bsas"			10
+	, 	Run Uptime	["-t", "Brillando hace <fc=#00FF00><days>d <hours>:<minutes></fc>"]     590
+	, 	Run Com		"/etc/archaic_dots/xmobar/net" []  "ip_route"            30
+	, 	Run Com		"/etc/archaic_dots/xmobar/meteoro" []  "meteoro"            600
+	, 	Run Memory	["-t", "<usedratio>%",  "-L", "33", "-H", "66", "-l", "green",  "-n", "yellow", "-h", "red" ]   10
+	-- ,	Run ThermalZone 0    ["-t", "<temp>ºC", "-L", "50", "-H", "60", "-l", "blue", "-n", "green", "-h", "red"]    50
+-- zone 0 is iwlwifi_1 in thinkpad T495
+	,	Run MultiCpu	[ "--template" , "<autototal>"
+                             	, "--Low"      , "33"         -- units: %
+                             	, "--High"     , "66"         -- units: %
+                             	, "--low"      , "green"
+                             	, "--normal"   , "yellow"
+                             	, "--high"     , "red"
+                             	, "-m"     , "3"
+                             	] 10
+	,	Run K10Temp "0000:00:18.3"
+              ["-t", "<Tctl>C",
+               "-L", "40", "-H", "60",
+               "-l", "lightblue", "-n", "yellow", "-h", "red"]
+              10
         , Run Battery        [ "--template" , "<acstatus>"
                              , "--Low"      , "10"        -- units: %
                              , "--High"     , "80"        -- units: %
@@ -56,8 +56,10 @@ Config { font = "xft:xos4 Terminus:pixelsize=12:antialias=true:hinting=true"
                                 , "--normal"   , "darkorange"
                                 , "--high"     , "green"
                                 ] 30
+	, Run Weather "SACO" ["-t", "<station>: <tempC>C"] 36000
+	-- , Run Weather "SAAN" ["-t", "<station>: <tempC>C"] 36000
 ]
        , sepChar = "&"
        , alignSep = "}{"
-       , template = "[&multicpu& &coretemp& . &thermal0&] [&memory&] [&uptime&] [&battery&]}&ip_route&{[&dynnetwork&] &SABE& &fecha& &hora_bsas&"
+       , template = "[&multicpu& &k10temp&] [&memory&] [&uptime&] [&battery&]}&ip_route& {[&dynnetwork&] &meteoro& &fecha& &hora_bsas&"
        }

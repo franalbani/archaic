@@ -1,2 +1,3 @@
+#!/usr/bin/bash
 # 2017.10.19:
 ip -o -4 -br addr show scope global | awk '$2 != "DOWN" {text = text "    " $1 ": " substr($3, 0, length($3) - 3)} END {print text}'

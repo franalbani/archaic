@@ -236,7 +236,7 @@ then
         $debug sed 's/^# \(%wheel ALL=(ALL) ALL.*\)/\1/' -i /etc/sudoers
 
         $debug cd /etc
-        $debug git add /etc/group /etc/group- /etc/gshadow /etc/gshadow- /etc/passwd /etc/passwd- /etc/shadow /etc/shadow- /etc/sudoers
+        $debug git add group{,-} gshadow{,-} passwd{,-} shadow{,-} /etc/sudoers subuid{,-} subgid{,-}
         $debug git commit -m "creates user $USER_NAME"
 
         $debug ln -sf "$DOT_FILES_LOCATION/bash_profile" "/home/$USER_NAME/.bash_profile"

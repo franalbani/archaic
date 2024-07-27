@@ -24,8 +24,17 @@ Arch Automatic Installation Commands
 
 ## Usage
 
+- Consider `rmmod pcspkr` to save your composure.
 - Put a copy of this repo inside your **running** Live Arch Installation ISO.
+    - You may install `git` with `pacman -Sy` and `pacman -S git`
+    - And then `git clone https://github.com/franalbani/archaic`
 - Open `run_archaic` in a text editor, read it, check it, double-check it and edit the required variables. Left `$debug=` commented, so you can do a dry-run.
+    - Remember to choose a decent hostname. Some tips:
+        - don't use your name like "franpc" or "frannotebook" because then your prompt will be silly like "fran@franpc".
+        - don't use a generic name like "pc" or "notebook" because you may have more than one in the future.
+        - You don't name your dog "dog" or "frandog" or "mydog".
+        - Take the chance to honor some person, place or concept.
+        - Favor shorter words, to avoid having to type too much when login remotely.
 - Run `run_archaic | tee /tmp/archaic.log` script. It should be in **debug** mode so you can check that all text replacements went fine.
 - Re-open `run_archaic` and uncomment the `debug=` line.
 - Edit `xorg_pkgs` to reflect your video driver.

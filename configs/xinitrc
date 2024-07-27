@@ -14,8 +14,6 @@ xbindkeys -f /etc/archaic_dots/xbindkeysrc
 
 xmodmap /etc/archaic_dots/Xmodmap
 
-urxvtd -q -o -f &
-
 thunar --daemon &
 
 xmobar -x 0 /etc/archaic_dots/xmobar/botbar &

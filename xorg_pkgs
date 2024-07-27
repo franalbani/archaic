@@ -11,7 +11,7 @@ xmonad-contrib
 xmobar
 thunar
 thunar-volman
-rxvt-unicode
+alacritty
 firefox
 hunspell
 hunspell-es_ar

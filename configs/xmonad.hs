@@ -61,7 +61,7 @@ myKeys = [
             ((0, xK_Print ),  nextWS),
             ((shiftMask, xK_Print),   prevWS),
 
-            ((mod4Mask, xK_Return), spawnLog "urxvtc"),
+            ((mod4Mask, xK_Return), spawnLog "alacritty"),
             ((mod4Mask, xK_a), spawnLog "dbus-launch thunar"),
             ((mod4Mask, xK_i), spawnLog "mplayer -vf screenshot -fps 30 tv://"),
             ((mod4Mask, xK_s), spawnLog "scrot '/tmp/%Y.%m.%d.%H.%M.%S.png' -e 'kolourpaint $f && thunar /tmp'"),
@@ -82,7 +82,6 @@ main =	do
         xmobarproc <- spawnPipe "bash -c \"tee >(xmobar -x 0 /etc/archaic_dots/xmobar/topbar) | xmobar -x 1 /etc/archaic_dots/xmobar/topbar\""
         xmonad $ docks defaultConfig
             {
-              terminal = "urxvtc"
             , workspaces = map show [1..9]
             , modMask = mod4Mask
               -- Pantalla completa de Chromium:

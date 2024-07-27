@@ -74,6 +74,7 @@ while [ $PARTITIONS_READY = "no" ]
 do
     # Create one for LUKS+LVM ("Linux LVM" type) and one for SEC_ARCH ("Linux")
     $debug cfdisk $DEVICE
+    $debug partprobe
     echo "This is the output of fdisk -l $DEVICE:"
     fdisk -l $DEVICE
     echo
@@ -125,6 +126,12 @@ $debug mount $EFI /mnt/boot
 $debug pacstrap -K /mnt linux $PKGS
 $debug bash -c "genfstab -U /mnt >> /mnt/etc/fstab"
 
+# CACHE
+PKG_CACHE=/tmp/pkg_cache
+$debug mkdir -p $PKG_CACHE
+$debug rsync -av /mnt/var/cache/pacman/pkg/ $PKG_CACHE
+$debug rsync -av $PKG_CACHE/ /mnt/var/cache/pacman/pkg
+
 echo "MAIN ARCH LINUX INSTALLATION"
 
 $debug cp $INSIDE_SCRIPT /mnt/root/
@@ -139,18 +146,11 @@ $debug umount -R /mnt
 
 $debug mkfs.ext4 $SEC_ARCH
 
-# Mount Main Arch Installation /var to access pacman cache:
-MAIN_VAR=/tmp/main_var
-$debug mkdir -p $MAIN_VAR
-$debug mount /dev/${VG_NAME}/var $MAIN_VAR
-
 $debug mount $SEC_ARCH /mnt
 $debug mkdir -p /mnt/boot
 $debug mount $EFI /mnt/boot
 $debug mkdir -p /mnt/var/cache/pacman/pkg/
-# TODO: there must be a better way:
-# Copy main pacman cache to avoid re-downloading packages:
-$debug cp $MAIN_VAR/cache/pacman/pkg/* /mnt/var/cache/pacman/pkg/
+$debug rsync -av $PKG_CACHE/ /mnt/var/cache/pacman/pkg
 # Secondary Arch will use linux-lts kernel to be able to share /boot partition
 # Don't put "" around $PKGS; it should expand with its spaces.
 $debug pacstrap -K /mnt linux-lts $PKGS

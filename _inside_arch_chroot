@@ -136,7 +136,7 @@ $debug git add $SMARTD_UNIT
 $debug git commit -m 'enables smartd'
 
 ### mkinitcpio ###
-HOOKS="base systemd autodetect modconf block keyboard sd-vconsole sd-encrypt sd-lvm2 filesystems keyboard fsck"
+HOOKS="base systemd autodetect microcode modconf kms keyboard sd-vconsole block sd-encrypt lvm2 filesystems fsck"
 $debug sed "/^HOOKS=/ s/.*/HOOKS=($HOOKS)/" -i "$ETC_MKINITCPIO"
 $debug cd /etc
 $debug git add "$ETC_MKINITCPIO"
@@ -159,7 +159,6 @@ $debug git commit -m 'configs and enables avahi'
 ### PACMAN OPTIONS ###
 $debug sed 's/^#\(UseSyslog.*\)/\1/'       -i "$PACMAN_CONF"
 $debug sed 's/^#\(Color.*\)/\1/'           -i "$PACMAN_CONF"
-$debug sed 's/^#\(TotalDownload.*\)/\1/'   -i "$PACMAN_CONF"
 $debug sed 's/^#\(VerbosePkgLists.*\)/\1/' -i "$PACMAN_CONF"
 $debug cd /etc
 $debug git add "$PACMAN_CONF"
